@@ -1,13 +1,13 @@
 This is a basic crawler for Wikipedia articles.
+Please don't use it to actively crawl it at runtime. And if you need to, remember to [follow thir rules](
+http://en.wikipedia.org/wiki/Wikipedia:Database_download#Please_do_not_use_a_web_crawler):
 
-I filter out external, disambiguation and other links (e.g. images).
-
-I wanted an interesting dataset so I decided to create my own.
+Note that I filter out external, disambiguation and other links (e.g. images).
 
 Still work in progress
 
 
-###TODOS:
+####Possible improvment:
 
 
 * pass the as arguments to the script the following variables:
@@ -18,5 +18,4 @@ Still work in progress
 
 * speed improvements: hash the pages for a quicker search
 
-* move helper function to a module
 
