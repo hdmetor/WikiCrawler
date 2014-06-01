@@ -12,19 +12,18 @@ class WikiCrawler:
   #max number of links stored that need to be visited
   general_len = 500
   root = 'http://en.wikipedia.org/wiki/'
-  def __init__(self, start, length, path):
+  def __init__(self, path):
     self.visited = self.load(path)
-    self.to_visit = [start]
     self.path = path
     if start in self.visited:
       print(start, 'was already crawled... quitting')
       quit()
-    self.length = length
-    #self.path = path
 
 
-  def crawl(self):
-    local_length = self.length
+
+  def crawl(self, start, length):
+    self.to_visit = [start]
+    local_length = length
     while local_length > 0:
       if not self.to_visit:
         print('all pages crawled, quitting')
@@ -36,10 +35,11 @@ class WikiCrawler:
         print ('skipping ',page)
         pass
       else:
-        print(self.length - local_length + 1,': crawling ',page)
+        print(length - local_length + 1,': crawling ',page)
         local_length-=1
         try:
           htmltext = urllib.request.urlopen(self.root+page).read()
+          #be kind :)
           time.sleep(1)
           soup = BeautifulSoup(htmltext)
           all_links = self.links(soup)
@@ -95,6 +95,12 @@ class WikiCrawler:
     visited_save = self.visited
     with open(path,'wb') as fp:
       pickle.dump(visited_save,fp)
+  def query(self,page):
+    if page in self.visited:
+      print (page ,' was already crawled')
+    else:
+      print (page ,' wasn\'t crawled')
+
 
 def wiki_links_condition(x):
   if x:
@@ -105,5 +111,7 @@ def wiki_links_condition(x):
 if __name__ == '__main__':
   start = 'Wikipedia'
   max_iter = 2
-  crawler = WikiCrawler(start, max_iter,'dunmp.p')
-  crawler.crawl()
+  crawler = WikiCrawler('data/data.p')
+  crawler.query('Batman')  
+  crawler.crawl('Batman',2)
+  crawler.query('Batman')
