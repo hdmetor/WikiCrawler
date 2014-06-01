@@ -7,8 +7,9 @@ Note that I filter out external, disambiguation and other links (e.g. images).
 Still work in progress
 
 
-####Possible improvment:
+####Possible improvement:
 
+* the first links shown are the ones in the summary box (as per html order). Maybe I should show the links in the text before them?
 
 * pass the as arguments to the script the following variables:
 
