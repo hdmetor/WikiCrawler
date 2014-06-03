@@ -17,6 +17,8 @@ Still work in progress
   - start page
   - length
 
-* speed improvements: hash the pages for a quicker search
+* keep track of the ordering of the crawl
+
+* define a method that crawls all the links of the start page, up do a fixed depth
 
 
