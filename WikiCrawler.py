@@ -43,7 +43,7 @@ class WikiCrawler:
                     all_links = self.links(soup)
                     self.visited[page] = {'links': all_links,
                                                         'languages': self.languages(soup),
-                                                        'text_lenght': self.text_lenght(soup)
+                                                        'text_length': self.text_length(soup)
                                                         }
                     self.to_visit = self.extend_list(self.to_visit, all_links,10)
                     if (length - local_length + 1) % 100 == 0:
@@ -52,7 +52,7 @@ class WikiCrawler:
                     print(page,' is a bad url, it will be skipped')
         print('done with crawling, saving the results')     
         self.save(self.path)
-    def text_lenght(self,soup):
+    def text_length(self,soup):
         return len(soup.find('div', id='bodyContent').get_text())
     def languages(self,soup):
         langs = soup.find_all('a', lang=True)
@@ -67,6 +67,13 @@ class WikiCrawler:
             else:
                 returned_links.append(tag['href'][6:])
         return returned_links
+    def examine_depth(page,depth):
+        if depth == 0:
+            pass
+        #if the page was already crawled
+        if page in self.visited:
+            for link in self.visited['links']:
+                examine_depth(link,depth - 1)
     def extend_list(self,list1,list2, max):
         if len(list1) > self.general_len:
             return list1
