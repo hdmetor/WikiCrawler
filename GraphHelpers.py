@@ -61,6 +61,12 @@ def find_links(graph, start, max_depth, max_links = None):
 def find_path(graph, first, last, max_depth):
     to_visit = [[first]]
     visited = []
+    if first not in graph:
+        print (first,' is not in the graph')
+        return None
+    if last not in graph:
+        print (last,' is not in the graph')
+        return None
     while to_visit:
         path = to_visit.pop(0)
         current = path[-1]
@@ -138,7 +144,7 @@ if __name__ == '__main__':
     print()    
     print('visit all link starting at 1 ',find_all_links(graph,'1'))
     print()
-    print('visit all link at depth 2 starting at 1 ',find_links(graph2,'1',2, max_links=1))
+    print('visit all link at depth 2 starting at 1 ',find_links(graph2,'1',2, max_links=10))
     print()
     print('find path between 1 and 6 ',find_path(graph2,'1','6',5))
     print()
