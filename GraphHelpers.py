@@ -62,10 +62,10 @@ def find_path(graph, first, last, max_depth):
     to_visit = [[first]]
     visited = []
     if first not in graph:
-        print (first,' is not in the graph')
+        print (first,'is not in the graph')
         return None
     if last not in graph:
-        print (last,' is not in the graph')
+        print (last,'is not in the graph')
         return None
     while to_visit:
         path = to_visit.pop(0)
