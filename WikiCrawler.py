@@ -43,10 +43,11 @@ class WikiCrawler:
                     all_links = self.links(soup)
                     self.visited[page] = {'links': all_links,
                                                         'languages': self.languages(soup),
-                                                        'text_length': self.text_length(soup)
+                                                        'text_length': self.text_length(soup),
+                                                        'time' : datetime.datetime.now
                                                         }
                     self.to_visit = self.extend_list(self.to_visit, all_links,10)
-                    if (length - local_length + 1) % 100 == 0:
+                    if (length - local_length ) % 100 == 0 and (length - local_length ) !=max_iter:
                       self.save(self.path)
                 except urllib.error.HTTPError:
                     print(page,' is a bad url, it will be skipped')
@@ -99,6 +100,11 @@ class WikiCrawler:
         visited_save = self.visited
         with open(path,'wb') as fp:
             pickle.dump(visited_save,fp)
+    #def mongo_save(self, path, cache):
+    #    pages_db.insert([{page.replace('.','[dot]'): cache[link] } for page in cache])
+    #    cache = {}
+    #def mongo_load(self, path):
+    #    pass
     def query(self,page):
         if page in self.visited:
             print (page ,'was already crawled')
@@ -108,13 +114,13 @@ class WikiCrawler:
 
 def wiki_links_condition(x):
     if x:
-                return x.startswith('/wiki/') and ':' not in x and not x.endswith('_(disambiguation)')
+        return x.startswith('/wiki/') and ':' not in x and not x.endswith('_(disambiguation)')
     else:
-                return False
+        return False
 
 if __name__ == '__main__':
     start = 'Donald_Duck'
-    max_iter = 1
+    max_iter = 300
     crawler = WikiCrawler('data/data.p')
     print ('\n\ncrawling started at ',datetime.datetime.now())   
     crawler.crawl(start,max_iter)
