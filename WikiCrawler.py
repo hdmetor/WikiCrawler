@@ -25,6 +25,7 @@ class WikiCrawler:
         while local_length > 0:
             if not self.to_visit:
                 print('all pages crawled, quitting')
+                self.save(self.path)
                 quit()
             else:    
                 page = self.to_visit[0]
@@ -44,7 +45,7 @@ class WikiCrawler:
                     self.visited[page] = {'links': all_links,
                                                         'languages': self.languages(soup),
                                                         'text_length': self.text_length(soup),
-                                                        'time' : datetime.datetime.now
+                                                        'time' : datetime.datetime.now()
                                                         }
                     self.to_visit = self.extend_list(self.to_visit, all_links,10)
                     if (length - local_length ) % 100 == 0 and (length - local_length ) !=max_iter:
@@ -120,7 +121,7 @@ def wiki_links_condition(x):
 
 if __name__ == '__main__':
     start = 'Donald_Duck'
-    max_iter = 300
+    max_iter = 10
     crawler = WikiCrawler('data/data.p')
     print ('\n\ncrawling started at ',datetime.datetime.now())   
     crawler.crawl(start,max_iter)
