@@ -119,7 +119,7 @@ def wiki_links_condition(x):
     else:
         return False
 
-if __name__ == '__main__':
+if __name__ == '__main__': 
     start = 'Donald_Duck'
     max_iter = 10
     crawler = WikiCrawler('data/data.p')

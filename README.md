@@ -20,9 +20,9 @@ I have implemented some breath first search algorithms to visit the links. All o
 
 * find interesting or amusing connections between totally unrelated topics. For example the trip from Machiavelli to French fries (and back) is:
 
-    ['Niccolò_Machiavelli', 'Florence', 'Brussels', 'French_fries']  
+        ['Niccolò_Machiavelli', 'Florence', 'Brussels', 'French_fries']  
 
-    ['French_fries', 'Belgium', 'Head_of_state', 'Niccolò_Machiavelli']  
+        ['French_fries', 'Belgium', 'Head_of_state', 'Niccolò_Machiavelli']  
 
     Note that both paths go through Belgium or Brussels
   
@@ -41,7 +41,12 @@ I have implemented some breath first search algorithms to visit the links. All o
 * use mongodb to store the data. Change the save method to save only the pages crawled since the last save. Load method needs to load only the list of visited pages.
 Possible structure for the db:
 
-    >{'page': page, 'links': links, 'text_length' : text_length, 'languages' : languages, 'time_stamp': time_stamp}
+        {
+            'page': page,
+            'links': links,
+            'text_length' : text_length, 
+            'languages' : languages, 'time_stamp': time_stamp
+        }
 
 * define a method that crawls all (or the first _n_) links of the start page, up do a fixed depth
 
