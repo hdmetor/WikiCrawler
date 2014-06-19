@@ -142,7 +142,12 @@ Also the uppermost element (which makes it the page with most links we have enco
     data.sort('languages_length', ascending = False).index[0]
     'Russia'   
 
+Let's use size of the dot and intensity of the color to show the length of the text:
 
+    ggplot(aes(x='links_length', y='languages_length', size = 'text_length', alpha = 'text_length'), data = data) + geom_point(color='lightblue') +
+    ggtitle("Languages vs links") + xlab("Number of links") + ylab("Number of languages")
+
+![Languages vs Links and Text](Images/lang_vs_links_size.png)
 #Languages vs text length
 
 Is there a relation between the number of languages an article is written in with the length of the text of its article?
@@ -234,13 +239,21 @@ There are some other interesting pages, for which there is "not much to say" (in
     'Square_(geometry)',
     'West']
 
+As before, let's include the size of the dots:
+
+    ggplot(aes(x='text_length', y='languages_length', size = 'links_length', alpha = 'links_length'), data = data) + geom_point(color='lightgreen') +
+    ggtitle("Languages vs links") + xlab("Length of the text") + ylab("Number of languages")
+
+![Languages vs Text and Links](Images/lang_vs_text_size.png)
 
 #Text length vs number of links
 
 There seems to be a cleaner relation  between the text length and the number of links present on a page.
 This is in part obvious because, by definition, links contains words.
 
-    ggplot(aes(x='links_length', y='text_length'), data = data) + geom_point(color='orange') + stat_smooth(span=.05, color='black', se=True) + ggtitle("Text length vs number of links") + xlab("Number of links") +ylab("Text length")
+    ggplot(aes(x='links_length', y='text_length'), data = data) + geom_point(color='orange') + 
+    stat_smooth(span=.05, color='black', se=True) + ggtitle("Text length vs number of links") + 
+    xlab("Number of links") +ylab("Text length")
 
 ![Text vs numbers of links](Images/scatter_text_vs_links.png)
 
@@ -295,24 +308,10 @@ Anyways, in this "chatty" pages, the Ancient Romans appear 3 times out of 10 uni
     'Telephone_numbers_in_the_United_Kingdom',
     'Vietnam_War']
 
-#Quick recap
+This is how our data look like when we include the size in the picture:
 
- Before moving to something else, I want to show again the same plots, but using the size of the point in a meaningful way. 
- For example, in the following links vs languages plot, the size of each point represent the magnitude of the text length.
- 
-
-
-    ggplot(aes(x='text_length', y='languages_length', size = 'links_length', alpha = 'links_length'), data = data) + geom_point(color='lightgreen') +
-    ggtitle("Languages vs links") + xlab("Length of the text") + ylab("Number of languages")
-
-![Languages vs Text and Links](Images/lang_vs_text_size.png)
-
-    ggplot(aes(x='links_length', y='languages_length', size = 'text_length', alpha = 'text_length'), data = data) + geom_point(color='lightblue') +
-    ggtitle("Languages vs links") + xlab("Number of links") + ylab("Number of languages")
-
-![Languages vs Links and Text](Images/lang_vs_links_size.png)
-
-    ggplot(aes(x='links_length', y='text_length', size = 'languages_length', alpha = 'languages_length'), data = data) + geom_point(color='orange') +
-    ggtitle("Text length vs number of links") + xlab("Number of links") +ylab("Text length") 
+    ggplot(aes(x='links_length', y='text_length', size = 'languages_length', alpha = 'languages_length'), data = data) + 
+    geom_point(color='orange') + ggtitle("Text length vs number of links") + 
+    xlab("Number of links") +ylab("Text length") 
 
 ![Text vs Links and Languages](Images/text_vs_links_size.png)
