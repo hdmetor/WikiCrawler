@@ -21,11 +21,20 @@ First of all, let's count how many pages have been crawled:
     33022
 
 As of 16 June 2014 the [number of Wikipedia articles](http://en.wikipedia.org/wiki/Wikipedia:Size_of_Wikipedia) is 4,536,157.
-This means that my data correspond roughly to 0.0073% of the complete corpus. Thus the following analysis doesn't intend to be complete or exhaustive in any way.    
+This means that my data correspond roughly to 0.0073% of the complete corpus. 
 
-#Language analysis
+Let's see how many pages have we reached:
 
-Some pages do have translation to other languages. How many languages, have I reached in the crawling? 
+    len(dict(data.links.map(collections.Counter).sum()))
+    1272214
+
+So we crawled an average of 38.5 links for each page. This number corresponds to 0.28% of the total of pages. 
+
+For such reasons, the following analysis doesn't intend to be complete or exhaustive in any way.    
+
+#Languages distributions
+
+Some pages do have translation to other languages. How many languages, have we reached in the crawling? 
 
     lang_data = DataFrame(dict(data.languages.map(collections.Counter).sum()),
         index=['Count']).transpose()
@@ -61,13 +70,13 @@ The most used languages are:
     ja 18674
     sv 17854
 
-I expected to find simple English here, while it makes only in the top 30:
+To be honest, I expected to find simple English here, while it makes only in the top 30:
         
     sorted_lang = lang_data.sort(columns='Count',ascending=False)
     sorted_lang.index.get_loc('simple') 
     27
 
-Maybe crawling more pages with hard (like math of physics) topics will increase its position. 
+Maybe crawling more pages with hard topics (like math of physics) will increase its position. 
 
 This is the distribution of the 100 less used languages 
 
@@ -78,18 +87,20 @@ This is the distribution of the 100 less used languages
 
 ![Last 100 languages](Images/lang_last_100.png)
 
-###Languages vs links
+#Languages vs links
 My first guess was that there is a correlation between the number of languages and the number of links in a page, so that more 'important' pages have more translation and also more links.
 
     
-    ggplot(aes(x='links_len', y='languages_len'), data = data) + geom_point(color='lightblue') + stat_smooth(span=.05, color='black', se=True) +\
+    data['languages_length'] = data.languages.apply(len)
+    ggplot(aes(x='links_length', y='languages_length'), data = data) + geom_point(color='lightblue') + stat_smooth(span=.05, color='black', se=True) +
     ggtitle("Languages vs links") + xlab("Number of links") + ylab("Number of languages")
 
 ![Languages vs links](Images/scatter_lan_vs_links.png)
-The data is very noisy, but something interesting is happening: the page with lots of links (more than 2000) usually are much less translated than the others.
-Let's have a look at them
+The data is very noisy, but something interesting is happening: the page with lots of links (more than 2000) usually are much less translated than the others. We don't have enough data to infer that this a general tendency or rather something caused from the specific dataset we have.
 
-    list(data[data.links_len > 2000].sort('links_len', ascending = False).index)
+We can list such pages:
+
+    list(data[data.links_length > 2000].sort('links_length', ascending = False).index)
 
     ['List_of_dialling_codes_in_Germany',
     'List_of_United_States_counties_and_county-equivalents',
@@ -118,7 +129,7 @@ Almost all of the elements here are listing which explains the high number of li
 
 Note that alcohol makes the list twice here (once as 'Ethanol' and once as 'Alcoholic_beverage').
 
-I find some oddities here, for example `'List_of_dialling_codes_in_Germany'` is not translated in German and `'List_of_Roman_Catholic_dioceses_(structured_view)'` is translated only in Russian (not in Italan or Latin).
+I find some oddities here, for example 'List_of_dialling_codes_in_Germany' is not translated in German and 'List_of_Roman_Catholic_dioceses_(structured_view)' is translated only in Russian (not in Italan or Latin).
 
     data.ix['List_of_dialling_codes_in_Germany'].languages
     []
@@ -126,7 +137,182 @@ I find some oddities here, for example `'List_of_dialling_codes_in_Germany'` is 
     data.ix['List_of_Roman_Catholic_dioceses_(structured_view)#Ecclesiastical_Province_of_Rome'].languages
     ['ru']
 
-Also the upper most dot (which makes it the page with most links I have encountered) is Russia:
+Also the uppermost element (which makes it the page with most links we have encountered) is Russia:
 
-    data.sort('languages_len', ascending = False).index[0]
-    'Russia'    
+    data.sort('languages_length', ascending = False).index[0]
+    'Russia'   
+
+
+#Languages vs text length
+
+Is there a relation between the number of languages an article is written in with the length of the text of its article?
+
+    ggplot(aes(x='text_length', y='languages_length'), data=data) + geom_point(color='lightgreen') +
+    stat_smooth(span=.05, color='black', se=True) +
+    ggtitle("Languages vs text length") + xlab("Length of the text") + ylab("Number of languages")
+
+![Languages vs text length](Images/scatter_lang_vs_text.png)
+
+Hard to say, but there is a general tendency for articles with more pages to have more translations.
+
+
+One element seems really interesting here: the page with a very long text and almost no translation:
+
+    ['List_of_United_States_counties_and_county-equivalents']
+
+We'll have a look later at its languages.
+
+In general we expect the pages with long text and few translation to be very specific topics. Having a look in the dataset, we have    
+
+    list(data[(data.text_length>200000) & (data.languages_length < 10)].index)
+
+    ['Glossary_of_ancient_Roman_religion#capite_velato',
+    'Glossary_of_ancient_Roman_religion#feria',
+    'Glossary_of_ancient_Roman_religion#sacerdos',
+    'Glossary_of_ancient_Roman_religion#sodalitas',
+    'Imperial_Roman_army',
+    'List_of_United_States_counties_and_county-equivalents',
+    'List_of_metropolitan_areas_of_the_United_States',
+    'Sexuality_in_ancient_Rome',
+    'Telephone_numbers_in_the_United_Kingdom',
+    'Timeline_of_United_States_history']
+
+There are some other interesting pages, for which there is "not much to say" (in the sense that the text length is very small) but there are lot of translation, implying that these might be topics of general interest.
+
+    list(data[(data.text_length<10000) & (data.languages_length > 100)].index)
+
+    ['117',
+    '138',
+    '14',
+    '1492',
+    '161',
+    '169',
+    '180',
+    '192',
+    '2nd_century',
+    '37',
+    '41',
+    '45_AD',
+    '476',
+    '4th_century',
+    '54',
+    '5th_century',
+    '68',
+    '69',
+    '75',
+    '76',
+    '762',
+    '77',
+    '78',
+    '79',
+    '80',
+    '81',
+    '82',
+    '83',
+    '84',
+    '93',
+    '94',
+    '95',
+    '96',
+    '97',
+    '98',
+    '99',
+    'Archipelago',
+    'B',
+    'Centuries',
+    'Century',
+    'Country',
+    'D',
+    'East',
+    'I',
+    'Neck',
+    'Night',
+    'North',
+    'Population_density',
+    'Song',
+    'South',
+    'Square_(geometry)',
+    'West']
+
+
+#Text length vs number of links
+
+There seems to be a cleaner relation  between the text length and the number of links present on a page.
+This is in part obvious because, by definition, links contains words.
+
+    ggplot(aes(x='links_length', y='text_length'), data = data) + geom_point(color='orange') + stat_smooth(span=.05, color='black', se=True) + ggtitle("Text length vs number of links") + xlab("Number of links") +ylab("Text length")
+
+![Text vs numbers of links](Images/scatter_text_vs_links.png)
+
+
+Which pages contains many links compared to they text length?
+
+    list(data[(data['links_length']>2000) & (data['text_length'] < 150000)].index)
+
+    ['1995_in_film',
+     '2008_in_film',
+     'Alcoholic_beverage',
+     'Ethanol',
+     'List_of_Roman_Catholic_dioceses',
+     'List_of_Roman_Catholic_dioceses_(alphabetical)',
+     'List_of_Roman_Catholic_dioceses_(structured_view)#Ecclesiastical_Province_of_Rome',
+     'List_of_academic_disciplines_and_sub-disciplines',
+     'List_of_dialling_codes_in_Germany',
+     'List_of_garden_plants',
+     'List_of_postal_codes_in_Germany',
+     'List_of_towns_and_boroughs_in_Pennsylvania#Boroughs',
+     'List_of_years']
+
+Note that the pages in the previous list have a very small abstract. On the other hand, the points lying on the linear model, i.e.
+
+     list(data[(data['links_length']>2800) & (data['text_length'] > 180000)].index)
+
+     ['List_of_United_States_counties_and_county-equivalents',
+      'List_of_metropolitan_areas_of_the_United_States']
+
+have a bigger abstract before start listing elements.
+Note that the first page here is translated in Finnish (why people in Finland are interested in the list of countries in the US?).
+
+Let's see some page that have more word than links with respect to the above module. 
+We would expect this pages to be more descriptive, illustrative and detailed. 
+As we can see from the following list, I should have cleaned the data before this analysis, so that 'Glossary_of_ancient_Roman_religion' would appear only once, and the two capitalization for 'Roman_Empire' would coincide.  
+Anyways, in this "chatty" pages, the Ancient Romans appear 3 times out of 10 unique elements. I think this is a bias due to my personal choices in the starting point of the crawl.  
+
+    list(data[(data['links_length']<2000) & (data['text_length'] > 200000)].index)
+
+    ['Glossary_of_ancient_Roman_religion#capite_velato',
+    'Glossary_of_ancient_Roman_religion#feria',
+    'Glossary_of_ancient_Roman_religion#sacerdos',
+    'Glossary_of_ancient_Roman_religion#sodalitas',
+    'Golden_eagle',
+    'Greek_government-debt_crisis',
+    'Imperial_Roman_army',
+    'Libertarian_socialism',
+    'Roman_Empire',
+    'Roman_empire',
+    'Sexuality_in_ancient_Rome',
+    'Socialism',
+    'Telephone_numbers_in_the_United_Kingdom',
+    'Vietnam_War']
+
+#Quick recap
+
+ Before moving to something else, I want to show again the same plots, but using the size of the point in a meaningful way. 
+ For example, in the following links vs languages plot, the size of each point represent the magnitude of the text length.
+ 
+
+
+    ggplot(aes(x='text_length', y='languages_length', size = 'links_length', alpha = 'links_length'), data = data) + geom_point(color='lightgreen') +
+    ggtitle("Languages vs links") + xlab("Length of the text") + ylab("Number of languages")
+
+![Languages vs Text and Links](Images/lang_vs_text_size.png)
+
+    ggplot(aes(x='links_length', y='languages_length', size = 'text_length', alpha = 'text_length'), data = data) + geom_point(color='lightblue') +
+    ggtitle("Languages vs links") + xlab("Number of links") + ylab("Number of languages")
+
+![Languages vs Links and Text](Images/lang_vs_links_size.png)
+
+    ggplot(aes(x='links_length', y='text_length', size = 'languages_length', alpha = 'languages_length'), data = data) + geom_point(color='orange') +
+    ggtitle("Text length vs number of links") + xlab("Number of links") +ylab("Text length") 
+
+![Text vs Links and Languages](Images/text_vs_links_size.png)
