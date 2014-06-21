@@ -31,8 +31,9 @@ Let's see how many pages have we reached:
 So we crawled an average of 38.5 links for each page. This number corresponds to 0.28% of the total of pages. 
 
 For such reasons, the following analysis doesn't intend to be complete or exhaustive in any way.    
+#Distributions
 
-#Languages distributions
+##Languages
 
 Some pages do have translation to other languages. How many languages, have we reached in the crawling? 
 
@@ -86,6 +87,82 @@ This is the distribution of the 100 less used languages
     xlab("Number of translations") + ylab("Number of languages")
 
 ![Last 100 languages](Images/lang_last_100.png)
+
+#Text
+
+As we can see the distribution goes down pretty quickly:
+
+    ggplot(aes(x= 'text_length'), data=DataFrame(data.text_length)) + 
+    geom_histogram(binwidth=5000,fill='darkblue') +
+    ggtitle("Distribution of the text length") +xlab('')
+
+![](Images/hist_text.png)
+
+Let's zoom a couple of times in the first part of it:
+
+    ggplot(aes(x= 'text_length'), data=DataFrame(data.text_length)[data.text_length < 150000]) + 
+    geom_histogram(binwidth=2000,fill='darkblue') +
+    ggtitle("Distribution of the text length") +xlab('')
+
+![](Images/hist_text_160K.png)
+
+    ggplot(aes(x= 'text_length'), data=DataFrame(data.text_length)[data.text_length <= 40000]) + 
+    geom_histogram(binwidth=700,fill='darkblue') +
+    ggtitle("Distribution of the text length") +xlab('')
+
+![](Images/hist_text_40K.png)
+
+#Links
+    
+Which are the pages with more links in them?
+
+    data.links_length.order(ascending=False)[:10]
+
+    List_of_dialling_codes_in_Germany                                                   4993
+    List_of_United_States_counties_and_county-equivalents                               4438
+    List_of_postal_codes_in_Germany                                                     3248
+    Ethanol                                                                             3141
+    List_of_Roman_Catholic_dioceses_(structured_view)#Ecclesiastical_Province_of_Rome   3030
+    List_of_metropolitan_areas_of_the_United_States                                     3000
+    List_of_years                                                                       2931
+    Alcoholic_beverage                                                                  2913
+    List_of_Roman_Catholic_dioceses_(alphabetical)                                      2798
+    List_of_Roman_Catholic_dioceses                                                     2798
+
+Let's plot the distribution of the number of links in the page we have crawled:
+
+    ggplot(aes(x= 'links_length'), data=DataFrame(data.links_length)) + geom_histogram(binwidth=30, fill='red') +\
+    ggtitle("Numbers of links per page") + xlab(''
+
+![](Images/hist_links.png)
+    
+Let's zoom again in the where the majority of the data is:
+
+    ggplot(aes(x= 'links_length'), data=DataFrame(data.links_length)[data.links_length < 1000]) + geom_histogram(binwidth=10, fill='red') +\
+    ggtitle("Numbers of links per page") +xlab('')
+
+![](Images/hist_links_1000.png)
+
+    ggplot(aes(x= 'links_length'), data=DataFrame(data.links_length)[data.links_length < 400]) + geom_histogram(binwidth=10,fill='red') +\
+    ggtitle("Numbers of links per page") +xlab('')
+
+![](Images/hist_links_400.png)
+
+#Translations
+
+What about the number of languages in each page (i.e. the number of translations)?
+    
+    ggplot(aes(x= 'languages_length'), data=DataFrame(data.languages_length)) + geom_histogram(binwidth=10, fill='yellow') +\
+    ggtitle("Distribution of the number of translations") +xlab('')
+
+![](Images/hist_lang.png)
+
+    ggplot(aes(x= 'languages_length'), data=DataFrame(data.languages_length)[data.languages_length < 100]) + geom_histogram(binwidth=2, fill='yellow') +\
+    ggtitle("Distribution of the number of translations") +xlab('')
+
+![](Images/hist_lang_100.png)
+
+As we can see, circa 17% of the pages I crawled have at most 2 translations.
 
 #Languages vs links
 My first guess was that there is a correlation between the number of languages and the number of links in a page, so that more 'important' pages have more translation and also more links.
