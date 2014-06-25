@@ -16,11 +16,11 @@ class WikiCrawler:
     def __init__(self, path):
         self.visited = self.load(path)
         self.path = path
-    def crawl(self, start, length, add_links = True):
-        if start in self.visited:
-            print(start, 'was already crawled')
-            return
+    def crawl(self, start, length, add_links = True):            
         if type(start) == str:
+            if start in self.visited:
+                print(start, 'was already crawled')
+                return
             self.to_visit = [start]
         elif type(start) == list:
             self.to_visit = start
@@ -111,10 +111,11 @@ class WikiCrawler:
     #def mongo_load(self, path):
     #    pass
     def query(self,page):
-        if page in self.visited:
-            print (page ,'was already crawled')
-        else:
-            print (page ,' wasn\'t crawled')
+        if type(page) == str:
+            if page in self.visited:
+                print (page ,'was already crawled')
+            else:
+                print (page ,' wasn\'t crawled')
 
 
 def wiki_links_condition(x):
@@ -124,9 +125,11 @@ def wiki_links_condition(x):
         return False
 
 if __name__ == '__main__': 
-    start = 'Donald_Duck'
+    #start = 'Donald_Duck'
+    with open('data/DD_missing_links.p', 'rb') as fp:
+        start = pickle.load(fp)
     max_iter = 1000
-    crawler = WikiCrawler('data/data.p')
+    crawler = WikiCrawler('data/clean.p')
     print ('\n\ncrawling started at ',datetime.datetime.now())   
     crawler.crawl(start,max_iter, add_links = False)
     print ('\n\ncrawling finished at ',datetime.datetime.now()) 
