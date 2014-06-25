@@ -20,7 +20,10 @@ class WikiCrawler:
         if start in self.visited:
             print(start, 'was already crawled')
             return
-        self.to_visit = [start]
+        if type(start) == str:
+            self.to_visit = [start]
+        elif type(start) == list:
+            self.to_visit = start
         local_length = length
         while local_length > 0:
             if not self.to_visit:
@@ -121,7 +124,7 @@ def wiki_links_condition(x):
 
 if __name__ == '__main__': 
     start = 'Donald_Duck'
-    max_iter = 10
+    max_iter = 1000
     crawler = WikiCrawler('data/data.p')
     print ('\n\ncrawling started at ',datetime.datetime.now())   
     crawler.crawl(start,max_iter)
