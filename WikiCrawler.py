@@ -16,7 +16,7 @@ class WikiCrawler:
     def __init__(self, path):
         self.visited = self.load(path)
         self.path = path
-    def crawl(self, start, length):
+    def crawl(self, start, length, add_links = True):
         if start in self.visited:
             print(start, 'was already crawled')
             return
@@ -50,7 +50,8 @@ class WikiCrawler:
                                                         'text_length': self.text_length(soup),
                                                         'time' : datetime.datetime.now()
                                                         }
-                    self.to_visit = self.extend_list(self.to_visit, all_links,10)
+                    if add_links:
+                        self.to_visit = self.extend_list(self.to_visit, all_links,10)
                     if (length - local_length ) % 100 == 0 and (length - local_length ) !=max_iter:
                       self.save(self.path)
                 except urllib.error.HTTPError:
@@ -127,6 +128,6 @@ if __name__ == '__main__':
     max_iter = 1000
     crawler = WikiCrawler('data/data.p')
     print ('\n\ncrawling started at ',datetime.datetime.now())   
-    crawler.crawl(start,max_iter)
+    crawler.crawl(start,max_iter, add_links = False)
     print ('\n\ncrawling finished at ',datetime.datetime.now()) 
     crawler.query(start)    
