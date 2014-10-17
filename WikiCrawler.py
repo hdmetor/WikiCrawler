@@ -11,20 +11,26 @@ import datetime
 class WikiCrawler:
     """Wikipedia Article Crawler """
     #max number of links stored in the queue
-    general_len = 500
+    queue_max = 500
     root = 'http://en.wikipedia.org/wiki/'
     def __init__(self, path):
         self.visited = self.load(path)
         self.path = path
-    def crawl(self, start, length, add_links = True):            
+    def crawl(self, start, max_length, add_links = True, num_links = 10): 
+        """
+    crawl is the main function
+    it will start from \'start\' which can be either a page or a list of pages
+    if \'add_links\' is set to true, then it will add the first \'num_links\' links of each page to the queue
+    the crawling will stop after \'max_length\' iterations
+        """           
         if type(start) == str:
-            if start in self.visited:
+            if self.query(start):
                 print(start, 'was already crawled')
                 return
             self.to_visit = [start]
         elif type(start) == list:
             self.to_visit = start
-        local_length = length
+        local_length = max_length
         while local_length > 0:
             if not self.to_visit:
                 print('all pages crawled, quitting')
@@ -37,7 +43,7 @@ class WikiCrawler:
                 print ('\t\tskipping ',page)
                 pass
             else:
-                print(length - local_length + 1,': crawling ',page)
+                print(max_length - local_length + 1,': crawling ',page)
                 local_length-=1
                 try:
                     htmltext = urllib.request.urlopen(self.root+page).read()
@@ -45,14 +51,15 @@ class WikiCrawler:
                     time.sleep(1)
                     soup = BeautifulSoup(htmltext)
                     all_links = self.links(soup)
-                    self.visited[page] = {'links': all_links,
-                                                        'languages': self.languages(soup),
-                                                        'text_length': self.text_length(soup),
-                                                        'time' : datetime.datetime.now()
-                                                        }
+                    self.visited[page] = {
+                                            'links': all_links,
+                                            'languages': self.languages(soup),
+                                            'text_length': self.text_length(soup),
+                                            'time' : datetime.datetime.now()
+                                          }
                     if add_links:
-                        self.to_visit = self.extend_list(self.to_visit, all_links,10)
-                    if (length - local_length ) % 100 == 0 and (length - local_length ) !=max_iter:
+                        self.to_visit = self.extend_list(self.to_visit, all_links,max = num_links)
+                    if (max_length - local_length ) % 100 == 0 and (max_length - local_length ) !=max_iter:
                       self.save(self.path)
                 except urllib.error.HTTPError:
                     print(page,' is a bad url, it will be skipped')
@@ -89,12 +96,12 @@ class WikiCrawler:
         \'max\' default case is None, when each elemt is added
         if list1 is bigger than the queue then the funcion returns list1
         """
-        if len(list1) > self.general_len:
+        if len(list1) > self.queue_max:
             return list1
         else:
             index = 1
             for elem in list2:
-                if max == None or index <= max:
+                if max != None and index > max:
                     break
                 else:
                     if elem not in list1:
@@ -102,7 +109,7 @@ class WikiCrawler:
                         index+=1
             return list1
     def load(self,path):
-        """loads the data contained in a pickle file stored in \'path\'"""
+        """load loads the data contained in a pickle file stored in \'path\'"""
         try:
             with open(path,'rb') as fp:
                 return pickle.load(fp)
@@ -110,6 +117,7 @@ class WikiCrawler:
         except FileNotFoundError:
             return {}
     def save (self,path):
+        """save saves the data contained in a pickle file stored in \'path\'"""
         print('saving at ',datetime.datetime.now())
         visited_save = self.visited
         with open(path,'wb') as fp:
@@ -120,26 +128,23 @@ class WikiCrawler:
     #def mongo_load(self, path):
     #    pass
     def query(self,page):
+        """query checks if a page was visited or not"""
         if type(page) == str:
-            if page in self.visited:
-                print (page ,'was already crawled')
-            else:
-                print (page ,' wasn\'t crawled')
+            return page in self.visited
 
 
-def wiki_links_condition(x):
-    if x:
-        return x.startswith('/wiki/') and ':' not in x and not x.endswith('_(disambiguation)')
+def wiki_links_condition(link):
+    """wiki_links_condition checks if \'link\' is link to a Wikipedia article"""
+    if link:
+        return link.startswith('/wiki/') and ':' not in link and not link.endswith('_(disambiguation)')
     else:
         return False
 
 if __name__ == '__main__': 
-    #start = 'Donald_Duck'
-    with open('data/missing_links.p', 'rb') as fp:
-        start = pickle.load(fp)
-    max_iter = 10000
-    crawler = WikiCrawler('data/clean.p')
+    start = 'Donald_Duck'
+    max_iter = 100
+    crawler = WikiCrawler('data/new.p')
     print ('\n\ncrawling started at ',datetime.datetime.now())   
-    crawler.crawl(start,max_iter, add_links = False)
+    crawler.crawl(start,max_iter, add_links = True)
     print ('\n\ncrawling finished at ',datetime.datetime.now()) 
-    crawler.query(start)    
+    crawler.query(start)
