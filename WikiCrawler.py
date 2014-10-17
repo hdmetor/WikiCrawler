@@ -9,8 +9,8 @@ import datetime
 
 
 class WikiCrawler:
-    """ Wikipedia Article Crawler """
-    #max number of links stored that need to be visited
+    """Wikipedia Article Crawler """
+    #max number of links stored in the queue
     general_len = 500
     root = 'http://en.wikipedia.org/wiki/'
     def __init__(self, path):
@@ -59,11 +59,14 @@ class WikiCrawler:
         print('done with crawling, saving the results')     
         self.save(self.path)
     def text_length(self,soup):
+        """text_length computes the text length of an article, pass the soup as argument"""
         return len(soup.find('div', id='bodyContent').get_text())
     def languages(self,soup):
+        """languages computes the number of translation of an article, pass the soup as argument"""
         langs = soup.find_all('a', lang=True)
         return [tag['lang'] for tag in langs]
     def links(self, soup):
+        """links computes the number of links (internal to Wikipedia) inside on article, pass the soup as argument"""
         all_links = soup.findAll('a', {'href': wiki_links_condition})#, limit = limit)
         returned_links = []
         #just to be sure there are no duplicates links (and preserving the order!)
@@ -80,20 +83,26 @@ class WikiCrawler:
         if page in self.visited:
             for link in self.visited['links']:
                 examine_depth(link,depth - 1)
-    def extend_list(self,list1,list2, max):
+    def extend_list(self,list1,list2, max = None):
+        """
+        extend_list(list1, list2, max) extends list1 with element in list2 with a max of \'max\' number of elements
+        \'max\' default case is None, when each elemt is added
+        if list1 is bigger than the queue then the funcion returns list1
+        """
         if len(list1) > self.general_len:
             return list1
         else:
             index = 1
-            for i in list2:
-                if index > max:
+            for elem in list2:
+                if max == None or index <= max:
                     break
                 else:
-                    if i not in list1:
-                        list1.append(i)
+                    if elem not in list1:
+                        list1.append(elem)
                         index+=1
             return list1
     def load(self,path):
+        """loads the data contained in a pickle file stored in \'path\'"""
         try:
             with open(path,'rb') as fp:
                 return pickle.load(fp)
@@ -126,9 +135,9 @@ def wiki_links_condition(x):
 
 if __name__ == '__main__': 
     #start = 'Donald_Duck'
-    with open('data/DD_missing_links.p', 'rb') as fp:
+    with open('data/missing_links.p', 'rb') as fp:
         start = pickle.load(fp)
-    max_iter = 1000
+    max_iter = 10000
     crawler = WikiCrawler('data/clean.p')
     print ('\n\ncrawling started at ',datetime.datetime.now())   
     crawler.crawl(start,max_iter, add_links = False)
