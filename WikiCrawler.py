@@ -9,7 +9,7 @@ import datetime
 
 
 class WikiCrawler:
-    """Wikipedia Article Crawler """
+    """Wikipedia Article Crawler"""
     #max number of links stored in the queue
     queue_max = 500
     root = 'http://en.wikipedia.org/wiki/'
@@ -18,7 +18,7 @@ class WikiCrawler:
         self.path = path
     def crawl(self, start, max_length, add_links = True, num_links = 10): 
         """
-    crawl is the main function
+    crawl is the main worker
     it will start from \'start\' which can be either a page or a list of pages
     if \'add_links\' is set to true, then it will add the first \'num_links\' links of each page to the queue
     the crawling will stop after \'max_length\' iterations
@@ -46,29 +46,33 @@ class WikiCrawler:
                 print(max_length - local_length + 1,': crawling ',page)
                 local_length-=1
                 try:
-                    htmltext = urllib.request.urlopen(self.root+page).read()
-                    #be kind :)
-                    time.sleep(1)
-                    soup = BeautifulSoup(htmltext)
-                    all_links = self.links(soup)
-                    self.visited[page] = {
-                                            'links': all_links,
-                                            'languages': self.languages(soup),
-                                            'text_length': self.text_length(soup),
-                                            'time' : datetime.datetime.now()
-                                          }
-                    if add_links:
-                        self.to_visit = self.extend_list(self.to_visit, all_links,max = num_links)
-                    if (max_length - local_length ) % 100 == 0 and (max_length - local_length ) !=max_iter:
-                      self.save(self.path)
+                    crawl_html(page, num_links)
                 except urllib.error.HTTPError:
                     print(page,' is a bad url, it will be skipped')
         print('done with crawling, saving the results')     
         self.save(self.path)
+    def crawl_html(page, num_links, sleep_time = 1):
+        htmltext = urllib.request.urlopen(self.root+page).read()
+        #be kind :)
+        time.sleep(sleep_time)
+        soup = BeautifulSoup(htmltext)
+        all_links = self.links(soup)
+        self.visited[page] = {
+                                'links': all_links,
+                                'languages': self.languages(soup),
+                                'text_length': self.text_length(soup),
+                                'time' : datetime.datetime.now()
+                              }
+        if add_links:
+            self.to_visit = self.extend_list(self.to_visit, all_links, max = num_links)
+        if (max_length - local_length ) % 100 == 0 and (max_length - local_length ) !=max_iter:
+          self.save(self.path)
+
+
     def text_length(self,soup):
         """text_length computes the text length of an article, pass the soup as argument"""
         return len(soup.find('div', id='bodyContent').get_text())
-    def languages(self,soup):
+    def languages(self, soup):
         """languages computes the number of translation of an article, pass the soup as argument"""
         langs = soup.find_all('a', lang=True)
         return [tag['lang'] for tag in langs]
@@ -83,14 +87,14 @@ class WikiCrawler:
             else:
                 returned_links.append(tag['href'][6:])
         return returned_links
-    def examine_depth(page,depth):
+    def examine_depth(page, depth):
         if depth == 0:
             pass
         #if the page was already crawled
         if page in self.visited:
             for link in self.visited['links']:
                 examine_depth(link,depth - 1)
-    def extend_list(self,list1,list2, max = None):
+    def extend_list(self, list1, list2, max = None):
         """
         extend_list(list1, list2, max) extends list1 with element in list2 with a max of \'max\' number of elements
         \'max\' default case is None, when each elemt is added
@@ -139,6 +143,8 @@ def wiki_links_condition(link):
         return link.startswith('/wiki/') and ':' not in link and not link.endswith('_(disambiguation)')
     else:
         return False
+
+
 
 if __name__ == '__main__': 
     start = 'Donald_Duck'
