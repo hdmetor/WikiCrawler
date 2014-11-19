@@ -1,7 +1,7 @@
 class Link:
     def __init__(self, node, sons = None ,weight = None, depth = None):
         self.node = node
-        self.weight = weight if weight is not None else []
+        self.weight = weight if weight is not None else 0
         self.sons = sons if sons is not None else []
         self.depth = depth if depth is not None else 0
 
@@ -10,6 +10,8 @@ def new_reduce_graph(graph, start, max_depth, max_links = None):
     """
     reduce_graph will return the a subgraph of \'graph\', obtained by start and following \'max_links\' up to depth \'max_depth\'
     """
+    if start not in graph:
+        return None
     to_visit = [Link(start, depth = 0)]
     #reduced = {}
     visited = []
@@ -27,17 +29,23 @@ def new_reduce_graph(graph, start, max_depth, max_links = None):
                 page.weight = len(graph[page.node])
             except KeyError:
                 page.weight = 0
+            #print('**** appending and then continue ',page.node)
+            #if page.node in [n.node for n in visited]:
+            #    print ("\n",page.node,"\n")
             visited.append(page)
             continue
-        #print("not continued")
-        if page.node in [name.node for name in visited]:
+
+        elif page.node in [name.node for name in visited]:
             #i +=1
             #print(page.node,"already visited")
             pass
+            #print("not continued in if")
         else:
+            #print("not continued in else")
             #print('\tvisting page:', page.node)
             try:
-                links = [Link(l, depth = page.depth + 1) for l in graph[page.node][:max_links]]
+                #Putting str(l) to ensure compatibility with imported json files
+                links = [Link(str(l), depth = page.depth + 1) for l in graph[page.node][:max_links]]
                 weight = len(graph[page.node])
                 page.weight = weight
                 page.sons = links
@@ -47,13 +55,19 @@ def new_reduce_graph(graph, start, max_depth, max_links = None):
                 #reduced[page.node] = [l.node for l in links]
                 #print('\treduced is:', reduced)
                 to_visit.extend(links)
+                #print('**** appending in try ',page.node)
+                #if page.node in [n.node for n in visited]:
+                #    print ("\n",page.node,"\n")
                 visited.append(page)
                 #print('\tto visit are:', [(l.node, l.depth) for l in to_visit])
 
             except KeyError:
                 #print('passing',i)
-                i +=1
+                #i +=1
                 page.weight = 0
+                #print('**** appending in except ',page.node)
+                #if page.node in [n.node for n in visited]:
+                #    print ("\n",page.node,"\n")
                 visited.append(page)
                 #reduced[page.node] = []
     return visited
