@@ -18,10 +18,10 @@ class WikiCrawler:
         self.path = path
     def crawl(self, start, max_length, add_links = True, num_links = 10): 
         """
-    crawl is the main worker
-    it will start from \'start\' which can be either a page or a list of pages
-    if \'add_links\' is set to true, then it will add the first \'num_links\' links of each page to the queue
-    the crawling will stop after \'max_length\' iterations
+        crawl is the main worker
+        it will start from \'start\' which can be either a page or a list of pages
+        if \'add_links\' is set to true, then it will add the first \'num_links\' links of each page to the queue
+        the crawling will stop after \'max_length\' iterations
         """           
         if type(start) == str:
             if self.query(start):
