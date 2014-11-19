@@ -1,3 +1,63 @@
+class Link:
+    def __init__(self, node, sons = None ,weight = None, depth = None):
+        self.node = node
+        self.weight = weight if weight is not None else []
+        self.sons = sons if sons is not None else []
+        self.depth = depth if depth is not None else 0
+
+
+def new_reduce_graph(graph, start, max_depth, max_links = None):
+    """
+    reduce_graph will return the a subgraph of \'graph\', obtained by start and following \'max_links\' up to depth \'max_depth\'
+    """
+    to_visit = [Link(start, depth = 0)]
+    #reduced = {}
+    visited = []
+    #i = 0
+    while to_visit: #and i <=10:
+        #i+=1
+        page = to_visit.pop(0)
+        #print ('page is ',page.node)#,'and to visit is ',[(l.node, l.depth) for l in to_visit])
+        #print('visited ',[n.node for n in visited])
+        #print('  reduced is: ',reduced)
+
+        if page.depth >= max_depth:
+            #print (page.node, "is too deep")
+            try:
+                page.weight = len(graph[page.node])
+            except KeyError:
+                page.weight = 0
+            visited.append(page)
+            continue
+        #print("not continued")
+        if page.node in [name.node for name in visited]:
+            #i +=1
+            #print(page.node,"already visited")
+            pass
+        else:
+            #print('\tvisting page:', page.node)
+            try:
+                links = [Link(l, depth = page.depth + 1) for l in graph[page.node][:max_links]]
+                weight = len(graph[page.node])
+                page.weight = weight
+                page.sons = links
+                page.weight = len(graph[page.node])
+                #print ('\tweight is ', page.weight)
+                #print('\tlinks are:', [(l.node, l.depth) for l in links])
+                #reduced[page.node] = [l.node for l in links]
+                #print('\treduced is:', reduced)
+                to_visit.extend(links)
+                visited.append(page)
+                #print('\tto visit are:', [(l.node, l.depth) for l in to_visit])
+
+            except KeyError:
+                #print('passing',i)
+                i +=1
+                page.weight = 0
+                visited.append(page)
+                #reduced[page.node] = []
+    return visited
+
 
 
 def find_all_links(graph,start):
@@ -18,7 +78,7 @@ def find_all_links(graph,start):
                 #print('visited are:', visited)
                 to_visit.extend(links)
                 #print('to visit are:', to_visit)
-    
+
             except KeyError:
                 visited.append(page)
     return visited
@@ -32,7 +92,7 @@ def find_links(graph, start, max_depth, max_links = None):
     visited = []
     i = 0
     while to_visit:
-        page,i = to_visit.pop(0) 
+        page,i = to_visit.pop(0)
         #print('at the beginning i: ',i)
 
         if page in visited or i > max_depth:
@@ -41,14 +101,14 @@ def find_links(graph, start, max_depth, max_links = None):
         else:
             #print('\tvisting page:', page)
             try:
-                
+
                 links = [[l,i+1] for l in graph[page][:max_links]]
                 #print('\tlinks are:', links)
                 visited.append(page)
                 #print('\tvisited are:', visited)
                 to_visit.extend(links)
                 #print('to visit are:', to_visit)
-    
+
             except KeyError:
                 #print('passing',i)
                 visited.append(page)
@@ -85,11 +145,14 @@ def find_path(graph, first, last, max_depth):
 
 
 def reduce_graph(graph, start, max_depth, max_links = None):
+    """
+    reduce_graph will return the a subgraph of \'graph\', obtained by start and following \'max_links\' up to depth \'max_depth\'
+    """
     to_visit = [[start,0]]
     reduced = {}
     i = 0
     while to_visit:
-        page,i = to_visit.pop(0) 
+        page,i = to_visit.pop(0)
         #print('at the beginning i: ',i)
         if page in reduced or i > max_depth-1:
             #print(page,"already visited")
@@ -103,12 +166,12 @@ def reduce_graph(graph, start, max_depth, max_links = None):
                 #print('reduced is:', reduced)
                 to_visit.extend(links)
                 #print('to visit are:', to_visit)
-    
+
             except KeyError:
                 #print('passing',i)
-                reduced[page] = [] 
+                reduced[page] = []
     return reduced
-        
+
 
 
 if __name__ == '__main__':
@@ -130,7 +193,7 @@ if __name__ == '__main__':
         '5': ['6', '8'],
         '4': ['7'],
         '7': ['9', '10']
-        } 
+        }
 
     graph3 = {
         '1': ['2', '3', '4'],
@@ -139,9 +202,9 @@ if __name__ == '__main__':
         '5': ['6', '8','66','77'],
         '4': ['7','66','77'],
         '7': ['9', '10']
-        } 
+        }
 
-    print()    
+    print()
     print('visit all link starting at 1 ',find_all_links(graph,'1'))
     print()
     print('visit all link at depth 2 starting at 1 ',find_links(graph2,'1',2, max_links=10))
@@ -150,4 +213,29 @@ if __name__ == '__main__':
     print()
     print('reducing graph', reduce_graph(graph3, '1',2,max_links=2))
 
+"""
+
+from functools import wraps
+
+def memo(f):
+     Memoizing decorator for dynamic programming.
+    @wraps(f)
+    def func(*args):
+        if args not in func.cache:
+            func.cache[args] = f(*args)
+        return func.cache[args]
+    func.cache = {}
+    return func
+
+@memo
+def factorial(num):
+    Recursively calculate num!.
+    if num < 0:
+        raise ValueError("Negative numbers have no factorial.")
+    elif num == 0:
+        return 1
+    return num * factorial(num-1)
+
+
+"""
 
