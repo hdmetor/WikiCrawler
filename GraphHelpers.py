@@ -38,6 +38,10 @@ def reduce_graph(graph, start, max_depth, max_links = None):
                 links = [Link(str(l), depth = page.depth + 1) for l in graph[page.node][:max_links]]
                 # number of links in the original graph
                 page.weight = len(graph[page.node])
+                for link in links:
+                    if link.node in visited:
+                        link.weight = visited[link.node].weight
+                        # we should update sons as well, but this information is not relevant here for now
                 page.sons = links
                 visited[page.node] = page
                 to_visit.extend([l for l in links if l.node not in visited])
