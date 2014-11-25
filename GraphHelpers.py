@@ -18,6 +18,10 @@ def reduce_graph(graph, start, max_depth, max_links = None):
     while to_visit:
         page = to_visit.pop(0)
 
+        # check if a page was already visited
+        if page.node in visited:
+            continue
+
         if page.depth >= max_depth:
             # we don't need to traverse this node, just save the number of links
             # in the original graph, if any
@@ -44,7 +48,7 @@ def reduce_graph(graph, start, max_depth, max_links = None):
                         # we should update sons as well, but this information is not relevant here for now
                 page.sons = links
                 visited[page.node] = page
-                to_visit.extend([l for l in links if l.node not in visited])
+                to_visit.extend(links)
 
             except KeyError:
                 # this node in not present in the original graph
