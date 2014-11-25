@@ -57,4 +57,36 @@ def reduce_graph(graph, start, max_depth, max_links = None):
 
     return visited
 
+def find_path(graph, first, last, max_depth = None):
 
+    # this is a list of paths
+    to_visit = [[first]]
+    visited = []
+    if first not in graph:
+        print (first,' is not in the graph')
+        return None
+    if last not in graph:
+        print (last,' is not in the graph')
+        return None
+    while to_visit:
+        path = to_visit.pop(0)
+        current = path[-1]
+        if len(path) > max_depth:
+            print (' no path found within the desired depth')
+            return None
+        elif current in visited:
+            # the sons of this node have been already added to the queue
+            # so there is no need to create another path to reach them
+            pass
+        elif current == last:
+            return path
+        else:
+            visited.append(current)
+            # need a default case for nodes without children
+            for link in graph.get(current,[]):
+                # copy the current path
+                new_path = path[:]
+                # add each son of the current node
+                new_path.append(link)
+                # append (current path + son)
+                to_visit.append(new_path)
