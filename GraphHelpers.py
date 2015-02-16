@@ -122,6 +122,15 @@ def BFS(graph, start, max_depth = None, visited = None, depth = None):
     nodes.append(node)
     return visited
 
+def reverse_dic(original):
+    from collections import defaultdict
+    rev = defaultdict(list)
+    for key in original:
+        for el in original[key]:
+            rev[el].append(key)
+
+    return rev
+
 graph = {
     'a' : ["c", "b"],
     'b' : ["d", "e"],
@@ -133,5 +142,5 @@ graph = {
 
 nodes = []
 time = 0
-BFS(graph,"a")
+#BFS(graph,"a")
 #print([(node.key, node.depth, node.time_start, node.time_stop) for node in nodes])
