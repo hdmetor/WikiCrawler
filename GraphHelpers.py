@@ -1,9 +1,11 @@
-class Link:
-    def __init__(self, node, sons = None ,weight = None, depth = None):
-        self.node = node
+class Node:
+    def __init__(self, key, sons = None, weight = None, depth = None, time_start = None, time_stop = None):
+        self.key = key
         self.weight = weight if weight is not None else 0
-        self.sons = sons if sons is not None else []
-        self.depth = depth if depth is not None else 0
+        self.sons = sons #if sons is not None else []
+        self.depth = depth #if depth is not None else 0
+        self.time_start = time_start
+        self.time_stop = time_stop
 
 
 def reduce_graph(graph, start, max_depth, max_links = None):
@@ -13,25 +15,25 @@ def reduce_graph(graph, start, max_depth, max_links = None):
     if start not in graph:
         return {}
 
-    to_visit = [Link(start, depth = 0)]
+    to_visit = [Node(start, depth = 0)]
     visited = {}
     while to_visit:
         page = to_visit.pop(0)
 
         # check if a page was already visited
-        if page.node in visited:
+        if page.key in visited:
             continue
 
         if page.depth >= max_depth:
             # we don't need to traverse this node, just save the number of links
             # in the original graph, if any
             try:
-                page.weight = len(graph[page.node])
+                page.weight = len(graph[page.key])
             except KeyError:
                 page.weight = 0
 
             # let's make sure we will not visit this node again
-            visited[page.node] = page
+            visited[page.key] = page
             continue
 
         else:
@@ -39,21 +41,21 @@ def reduce_graph(graph, start, max_depth, max_links = None):
             try:
                 # str(l) to ensure compatibility with imported json files
                 # saving tops max_links links
-                links = [Link(str(l), depth = page.depth + 1) for l in graph[page.node][:max_links]]
+                links = [Node(str(l), depth = page.depth + 1) for l in graph[page.key][:max_links]]
                 # number of links in the original graph
-                page.weight = len(graph[page.node])
+                page.weight = len(graph[page.key])
                 for link in links:
-                    if link.node in visited:
-                        link.weight = visited[link.node].weight
+                    if link.key in visited:
+                        link.weight = visited[link.key].weight
                         # we should update sons as well, but this information is not relevant here for now
                 page.sons = links
-                visited[page.node] = page
+                visited[page.key] = page
                 to_visit.extend(links)
 
             except KeyError:
                 # this node in not present in the original graph
                 page.weight = 0
-                visited[page.node] = page
+                visited[page.key] = page
 
     return visited
 
@@ -90,3 +92,46 @@ def find_path(graph, first, last, max_depth = None):
                 new_path.append(link)
                 # append (current path + son)
                 to_visit.append(new_path)
+
+
+def BFS(graph, start, max_depth = None, visited = None, depth = None):
+    global time
+    global nodes
+    if visited == None:
+        visited = set()
+
+    if depth == None:
+        depth = 0
+
+    time += 1
+
+    visited.add(start)
+    print(start)
+    node = Node(start, depth = depth, time_start = time)
+
+    try:
+        for son in graph[start]:
+            if son not in visited:
+                BFS(graph, son, visited = visited, depth = depth +1)
+    except KeyError:
+        # the node has no sons
+        pass
+
+    time += 1
+    node.time_stop = time
+    nodes.append(node)
+    return visited
+
+graph = {
+    'a' : ["c", "b"],
+    'b' : ["d", "e"],
+    'c' : ["f"],
+    'd' : [],
+    'e' : ['f']
+}
+
+
+nodes = []
+time = 0
+BFS(graph,"a")
+#print([(node.key, node.depth, node.time_start, node.time_stop) for node in nodes])
