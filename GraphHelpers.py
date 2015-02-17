@@ -1,11 +1,12 @@
 class Node:
-    def __init__(self, key, sons = None, weight = None, depth = None, time_start = None, time_stop = None):
+    def __init__(self, key, sons = None, weight = None, depth = None, time_start = None, time_stop = None, parent = None):
         self.key = key
         self.weight = weight if weight is not None else 0
         self.sons = sons #if sons is not None else []
         self.depth = depth #if depth is not None else 0
         self.time_start = time_start
         self.time_stop = time_stop
+        self.parent = parent
 
 
 def reduce_graph(graph, start, max_depth, max_links = None):
@@ -105,7 +106,6 @@ def DFS(graph, start, visited, max_depth = None, depth = None):
     global nodes
     if depth == None:
         depth = 0
-    print('depth is ', depth, max_depth)
     if max_depth is not None and depth > max_depth:
         return
     time += 1
@@ -130,6 +130,30 @@ def DFS_general(graph):
     for key in graph:
         if key not in visited:
             DFS(graph, key, visited)
+
+
+# Breadth First Search
+
+def BFS(graph, start):
+    visited = set()
+    # list are not efficient as queue
+    from collections import deque
+    root = Node(start, depth = 0)
+    queue = deque([root])
+    while queue:
+        node = queue.popleft()
+        print(node.key)
+        try:
+            for son in graph[node.key]:
+                if son in visited:
+                    continue
+                son_node = Node(son, depth = node.depth + 1, parent = node)
+                queue.append(son_node)
+        except KeyError:
+            # node has no sons
+            pass
+
+
 
 
 # Topological Sort
@@ -167,3 +191,5 @@ graph = {
     'd' : [],
     'e' : ['f']
 }
+
+print(BFS(graph,'a'))
