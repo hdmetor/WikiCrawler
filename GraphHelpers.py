@@ -93,41 +93,54 @@ def find_path(graph, first, last, max_depth = None):
                 # append (current path + son)
                 to_visit.append(new_path)
 
+#               #
+# Search Algos: #
+#               #
 
-def BFS(graph, start, visited, max_depth = None, depth = None):
+# Depth First Search
+
+# Depth first search with a starting page
+def DFS(graph, start, visited, max_depth = None, depth = None):
     global time
     global nodes
-    #if visited == None:
-    #    visited = set()
-
     if depth == None:
         depth = 0
-
+    print('depth is ', depth, max_depth)
+    if max_depth is not None and depth > max_depth:
+        return
     time += 1
-
     visited.add(start)
-    print("inside bfs ", start)
+    print("visiting ", start)
     node = Node(start, depth = depth, time_start = time)
-
     try:
         for son in graph[start]:
             if son not in visited:
-                BFS(graph, son, visited = visited, depth = depth +1)
+                DFS(graph, son, visited = visited, depth = depth +1, max_depth = max_depth)
     except KeyError:
         # the node has no sons
         pass
-
     time += 1
     node.time_stop = time
     nodes.append(node)
     return visited
 
-def BFS_general(graph):
+#Explore the whole graph
+def DFS_general(graph):
     visited = set()
     for key in graph:
         if key not in visited:
-            BFS(graph, key, visited)
+            DFS(graph, key, visited)
 
+
+# Topological Sort
+
+def topological_sort(graph):
+    global nodes
+    nodes = []
+    BFS_general(graph)
+    return reversed(nodes)
+
+# Strongly connected components
 
 def reverse_dic(original):
     from collections import defaultdict
@@ -135,16 +148,17 @@ def reverse_dic(original):
     for key in original:
         for el in original[key]:
             rev[el].append(key)
-
     return rev
 
-def topological_sort(graph):
-    global nodes
+def SCC(graph):
     nodes = []
-    BFS_general(graph)
-    print ([node.key for node in nodes])
-    return reversed(nodes)
-
+    DFS_general(graph)
+    inverted = reverse_dic(graph)
+    visited = ()
+    for key in graph: #give the correct order
+        if key not in visited:
+            DFS(graph, key, visited)
+    # need a function to indentify DFS trees
 
 graph = {
     'a' : ["c", "b"],
@@ -153,12 +167,3 @@ graph = {
     'd' : [],
     'e' : ['f']
 }
-
-
-nodes = []
-time = 0
-#print(BFS_general(graph))
-#BFS(graph,"a",set())
-#print([(node.key, node.depth, node.time_start, node.time_stop) for node in nodes])
-#print("now top sort ")
-print([(node.key, node.depth, node.time_start, node.time_stop) for node in topological_sort(graph)])
