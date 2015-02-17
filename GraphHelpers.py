@@ -101,7 +101,7 @@ def find_path(graph, first, last, max_depth = None):
 # Depth First Search
 
 # Depth first search with a starting page
-def DFS(graph, start, visited, max_depth = None, depth = None):
+def DFS(graph, start, visited, max_depth = None, depth = None, parent = None):
     global time
     global nodes
     if depth == None:
@@ -111,11 +111,11 @@ def DFS(graph, start, visited, max_depth = None, depth = None):
     time += 1
     visited.add(start)
     print("visiting ", start)
-    node = Node(start, depth = depth, time_start = time)
+    node = Node(start, depth = depth, time_start = time, parent = parent)
     try:
         for son in graph[start]:
             if son not in visited:
-                DFS(graph, son, visited = visited, depth = depth +1, max_depth = max_depth)
+                DFS(graph, son, visited = visited, depth = depth +1, max_depth = max_depth, parent = node)
     except KeyError:
         # the node has no sons
         pass
@@ -142,6 +142,7 @@ def BFS(graph, start):
     queue = deque([root])
     while queue:
         node = queue.popleft()
+        visited.add(node.key)
         print(node.key)
         try:
             for son in graph[node.key]:
@@ -192,4 +193,3 @@ graph = {
     'e' : ['f']
 }
 
-print(BFS(graph,'a'))
