@@ -131,7 +131,6 @@ def DFS_general(graph):
         if key not in visited:
             DFS(graph, key, visited)
 
-
 # Breadth First Search
 
 def BFS(graph, start):
@@ -155,8 +154,6 @@ def BFS(graph, start):
             pass
 
 
-
-
 # Topological Sort
 
 def topological_sort(graph):
@@ -176,20 +173,41 @@ def reverse_dic(original):
     return rev
 
 def SCC(graph):
-    nodes = []
+    global nodes
     DFS_general(graph)
     inverted = reverse_dic(graph)
-    visited = ()
-    for key in graph: #give the correct order
+    visited = set()
+    # note: nodes are output in increasing order
+    #print_nodes(reversed(nodes))
+    print('second pass')
+    for key in (node.key for node in reversed(nodes)):
         if key not in visited:
             DFS(graph, key, visited)
     # need a function to indentify DFS trees
+
+# helper function
+def print_nodes(nodes):
+    print([(node.key, node.parent.key if node.parent is not None else None, node.time_stop) for node in nodes])
 
 graph = {
     'a' : ["c", "b"],
     'b' : ["d", "e"],
     'c' : ["f"],
-    'd' : [],
-    'e' : ['f']
+    'e' : ["f"]
 }
 
+graph2 = {
+    'a' : ["c", "b"],
+    'b' : ["d", "e"],
+    'c' : ["f"],
+    'e' : ["f"],
+    'g' : ['h','i'],
+    'h' : ['i'],
+    'j' : ['m'],
+    'l' : ['m']
+}
+time = 0
+nodes = []
+#print(reverse_dic(graph2))
+#print(DFS_general(graph2))
+SCC(graph2)
