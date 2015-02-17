@@ -94,11 +94,11 @@ def find_path(graph, first, last, max_depth = None):
                 to_visit.append(new_path)
 
 
-def BFS(graph, start, max_depth = None, visited = None, depth = None):
+def BFS(graph, start, visited, max_depth = None, depth = None):
     global time
     global nodes
-    if visited == None:
-        visited = set()
+    #if visited == None:
+    #    visited = set()
 
     if depth == None:
         depth = 0
@@ -106,7 +106,7 @@ def BFS(graph, start, max_depth = None, visited = None, depth = None):
     time += 1
 
     visited.add(start)
-    print(start)
+    print("inside bfs ", start)
     node = Node(start, depth = depth, time_start = time)
 
     try:
@@ -122,6 +122,13 @@ def BFS(graph, start, max_depth = None, visited = None, depth = None):
     nodes.append(node)
     return visited
 
+def BFS_general(graph):
+    visited = set()
+    for key in graph:
+        if key not in visited:
+            BFS(graph, key, visited)
+
+
 def reverse_dic(original):
     from collections import defaultdict
     rev = defaultdict(list)
@@ -130,6 +137,14 @@ def reverse_dic(original):
             rev[el].append(key)
 
     return rev
+
+def topological_sort(graph):
+    global nodes
+    nodes = []
+    BFS_general(graph)
+    print ([node.key for node in nodes])
+    return reversed(nodes)
+
 
 graph = {
     'a' : ["c", "b"],
@@ -142,5 +157,8 @@ graph = {
 
 nodes = []
 time = 0
-#BFS(graph,"a")
+#print(BFS_general(graph))
+#BFS(graph,"a",set())
 #print([(node.key, node.depth, node.time_start, node.time_stop) for node in nodes])
+#print("now top sort ")
+print([(node.key, node.depth, node.time_start, node.time_stop) for node in topological_sort(graph)])
