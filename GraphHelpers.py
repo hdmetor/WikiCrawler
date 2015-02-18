@@ -133,7 +133,7 @@ def DFS_general(graph):
 
 # Breadth First Search
 
-def BFS(graph, start):
+def BFS(graph, start, stop = None):
     visited = set()
     # list are not efficient as queue
     from collections import deque
@@ -143,6 +143,8 @@ def BFS(graph, start):
         node = queue.popleft()
         visited.add(node.key)
         print(node.key)
+        if stop is not None and stop == node.key:
+            return NodeToPath(node)
         try:
             for son in graph[node.key]:
                 if son in visited:
@@ -153,10 +155,16 @@ def BFS(graph, start):
             # node has no sons
             pass
 
+def NodeToPath(node):
+    path = []
+    while node:
+        path.append(node.key)
+        node = node.parent
+    return list(reversed(path))
 
 # Topological Sort
 
-def topological_sort(graph):
+def Topological_sort(graph):
     global nodes
     nodes = []
     BFS_general(graph)
@@ -178,8 +186,6 @@ def SCC(graph):
     inverted = reverse_dic(graph)
     visited = set()
     # note: nodes are output in increasing order
-    #print_nodes(reversed(nodes))
-    print('second pass')
     for key in (node.key for node in reversed(nodes)):
         if key not in visited:
             DFS(graph, key, visited)
@@ -210,4 +216,5 @@ time = 0
 nodes = []
 #print(reverse_dic(graph2))
 #print(DFS_general(graph2))
-SCC(graph2)
+#SCC(graph2)
+print(BFS(graph2,'a', stop = 'f'))
