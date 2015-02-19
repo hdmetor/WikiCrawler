@@ -101,21 +101,24 @@ def find_path(graph, first, last, max_depth = None):
 # Depth First Search
 
 # Depth first search with a starting page
-def DFS(graph, start, visited, max_depth = None, depth = None, parent = None):
+def DFS(graph, start, visited, max_depth = None, depth = None, parent = None, prints = False, flush = False):
     global time
     global nodes
+    if flush:
+        nodes = []
     if depth == None:
         depth = 0
     if max_depth is not None and depth > max_depth:
         return
     time += 1
     visited.add(start)
-    print("visiting ", start)
+    if prints:
+        print("visiting ", start)
     node = Node(start, depth = depth, time_start = time, parent = parent)
     try:
         for son in graph[start]:
             if son not in visited:
-                DFS(graph, son, visited = visited, depth = depth +1, max_depth = max_depth, parent = node)
+                DFS(graph, son, visited = visited, depth = depth +1, max_depth = max_depth, parent = node, prints = prints)
     except KeyError:
         # the node has no sons
         pass
@@ -125,15 +128,15 @@ def DFS(graph, start, visited, max_depth = None, depth = None, parent = None):
     return visited
 
 #Explore the whole graph
-def DFS_general(graph):
+def DFS_general(graph, prints = False):
     visited = set()
     for key in graph:
         if key not in visited:
-            DFS(graph, key, visited)
+            DFS(graph, key, visited, prints = prints)
 
 # Breadth First Search
 
-def BFS(graph, start, stop = None):
+def BFS(graph, start, stop = None, prints = False):
     visited = set()
     # list are not efficient as queue
     from collections import deque
@@ -142,7 +145,8 @@ def BFS(graph, start, stop = None):
     while queue:
         node = queue.popleft()
         visited.add(node.key)
-        print(node.key)
+        if prints:
+            print(node.key)
         if stop is not None and stop == node.key:
             return NodeToPath(node)
         try:
@@ -162,6 +166,16 @@ def NodeToPath(node):
         node = node.parent
     return list(reversed(path))
 
+def NodeToParent(key):
+    node = ([node for node in nodes if node.key == key])
+    if node == []:
+        return None
+    else:
+        node = node[0]
+    while node.parent:
+        node = node.parent
+    return node
+
 # Topological Sort
 
 def Topological_sort(graph):
@@ -180,20 +194,27 @@ def reverse_dic(original):
             rev[el].append(key)
     return rev
 
-def SCC(graph):
+def SCC(graph, prints = False):
+    from collections import defaultdict
+    import pprint
     global nodes
+    nodes = []
     DFS_general(graph)
-    inverted = reverse_dic(graph)
+    reversed_dict = reverse_dic(graph)
     visited = set()
-    # note: nodes are output in increasing order
-    for key in (node.key for node in reversed(nodes)):
+    # note: nodes are output in increasing order of finish time
+    scc = defaultdict(list)
+    #this makes a copy of the keys
+    keys = [node.key for node in reversed(nodes)]
+    nodes = []
+    for key in keys:
         if key not in visited:
-            DFS(graph, key, visited)
-    # need a function to indentify DFS trees
-
-# helper function
-def print_nodes(nodes):
-    print([(node.key, node.parent.key if node.parent is not None else None, node.time_stop) for node in nodes])
+            scc[key].append(key)
+            DFS(reversed_dict, key, visited, prints = prints)
+        else:
+            ancestor = NodeToParent(key)
+            scc[ancestor.key].append(key)
+    pprint.pprint(scc)
 
 graph = {
     'a' : ["c", "b"],
@@ -212,9 +233,25 @@ graph2 = {
     'j' : ['m'],
     'l' : ['m']
 }
+
+graph3 = {
+    "a" : ["b"],
+    "b" : ['c','f','e'],
+    'c' : ['d','g'],
+    'd' : ['c','h'],
+    'e' : ['a','f'],
+    'f' : ['g'],
+    'g' : ['f','h'],
+    'h' : ['h']
+
+
+}
 time = 0
 nodes = []
 #print(reverse_dic(graph2))
 #print(DFS_general(graph2))
-#SCC(graph2)
-print(BFS(graph2,'a', stop = 'f'))
+#print(reverse_dic(graph3))
+SCC(graph3, prints = False)
+SCC(graph, prints = False)
+#print(BFS(graph2,'a', stop = 'f'))
+#print(DFS_general(graph, prints = True))
