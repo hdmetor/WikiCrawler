@@ -16,11 +16,15 @@ I have implemented some breath first search algorithms to visit the links. All o
 
 ### [Analytics](Analytics.md)
 
-where I show relationship among number of links, number of translations and text length. The work was done with [this](Analytics.ipynb) iPython notebook; I used the `ggplot` package for the visualization.
+where I show relationship among number of links, number of translations and text length.
+
+![Languages vs Links](Images/scatter_lan_vs_links.png)
+ The work was done with [this](Analytics.ipynb) iPython notebook; I used the `ggplot` package for the visualization.
 
 ### [Graph functions](GraphHelper.py)
 
-where function relative to graph are collected. Among the classical DFS, BFS (used to find the shortest path) the function `reduce_graph` was pretty important, especially regarding plots. The average page has lots of links and in order to be able to make a meaningful plot, we need to reduce that number. This is exactly what such a function does.
+where function relative to graph are collected. A part from the classical ones like DFS, BFS (used to find the shortest path), there are implementations for topological sort and strongly connected components. Everything was recoded from scratch, using Python top-level functions.
+Among these, the function `reduce_graph` was pretty important, especially having plots in mind. The average page has too many links to be visualized: this function will consider only the first _n_ links of a given page.
 
 ### [Wikipedia graph](graphs)
 
@@ -51,7 +55,7 @@ No
 * draw the word cloud for the start page and see how it changes when visiting new pages in the path
 
 
-* use mongodb to store the data. Change the save method to save only the pages crawled since the last save. Load method needs to load only the list of visited pages.
+* use a NoSQL database (mongodb?) to store the data. Change the save method to save only the pages crawled since the last save. Load method needs to load only the list of visited pages.
 I have a dataset large enough now, so I don't see this a priority for now. Especially since it is possible to download the whole Wikipedia dump in one go.
 
 
