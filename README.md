@@ -1,4 +1,4 @@
-##WikiCrawer:
+#WikiCrawer:
 
 This is a basic crawler for Wikipedia articles.
 Please don't use it to aggressively crawl Wiki and remember to follow [their rules](
@@ -12,11 +12,32 @@ Links are saved in the order they appear on the page.
 
 I have implemented some breath first search algorithms to visit the links. All of them allow cycles in the graph. It is possible to limit the search to the first _n_ links and to depth _d_.
 
-##Planned features:
+## Project overview:
 
-* show the relationship between the number of links +  number of translations and the text length. Find out what kinds of pages are outliers (i.e. long text but fewer links)
+### [Analytics](Analytics.md)
 
-* try to predict the number of links given the number of translations and the text length
+where I show relationship among number of links, number of translations and text length. The work was done with [this](Analytics.ipynb) iPython notebook; I used the `ggplot` package for the visualization.
+
+### [Graph functions](GraphHelper.py)
+
+where function relative to graph are collected. Among the classical DFS, BFS (used to find the shortest path) the function `reduce_graph` was pretty important, especially regarding plots. The average page has lots of links and in order to be able to make a meaningful plot, we need to reduce that number. This is exactly what such a function does.
+
+### [Wikipedia graph](graphs)
+
+This folder contains all the graphs I generated using this [notebook](Plot Graph (Python 2).ipynb). Note that the [main crawler](WikiCrawler.py) was written in Python 3 and `pygraphviz` was working correctly only in Python 2. So [this](Convert graph (Python 3).ipynb) exported the data into `JSON`.
+
+Let's consider the following example:
+
+![Donald Duck](graphs/Donald_Duck_5_5.jpg)
+
+the node at the center represent the Wikipedia page relative to Donald Duck, with each circle being an extra link level. So for example the elements in the second circle are the pages that are reachable from Donald Duck in two steps. In this particular case, each page contains at most 5 links.
+
+Node color and node size are proportional to the number of links contained in the page.
+
+ In the [graphs](graphs) folder there are more experiment with different starting nodes, number of links per page and number of layers.
+No
+
+##Possible improvements::
 
 * find interesting or amusing connections between totally unrelated topics. For example the trip from Machiavelli to French fries (and back) is:
 
@@ -26,37 +47,11 @@ I have implemented some breath first search algorithms to visit the links. All o
 
     Note that both paths go through Belgium or Brussels
 
-* cluster pages. It would be interesting to see if the path from A to B passes through the same clusters as the one from B to A
-
-* plot the first _n_ links for each page and have the size of the nodes proportional to the number of links
-
-* find the longest path of length _n_ starting from a given page
 
 * draw the word cloud for the start page and see how it changes when visiting new pages in the path
 
-* implement Dijkstra's algorithm for a more efficient graph search. The weight should be proportionally inverse to the number of links, so that the search is preferably done into 'hubs'
-
-##Possible improvements:
 
 * use mongodb to store the data. Change the save method to save only the pages crawled since the last save. Load method needs to load only the list of visited pages.
-Possible structure for the db:
-
-        {
-            'page': page,
-            'links': links,
-            'text_length' : text_length,
-            'languages' : languages,
-            'time_stamp': time_stamp
-        }
-
-* define a method that crawls all (or the first _n_) links of the start page, up do a fixed depth
-
-* allow a less verbose option
-
-* pass as arguments to the script the following variables:
-
-    - file location (optional)
-    - start page
-    - number of iterations
+I have a dataset large enough now, so I don't see this a priority for now. Especially since it is possible to download the whole Wikipedia dump in one go.
 
 
