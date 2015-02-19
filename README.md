@@ -21,7 +21,7 @@ where I show relationship among number of links, number of translations and text
 ![Languages vs Links](Images/scatter_lan_vs_links.png)
  The work was done with [this](src/Analytics.ipynb) iPython notebook; I used the `ggplot` package for the visualization.
 
-### [Graph functions](src/GraphHelper.py)
+### [Graph functions](src/GraphFunctions.py)
 
 where function relative to graph are collected. A part from the classical ones like DFS, BFS (used to find the shortest path), there are implementations for topological sort and strongly connected components. Everything was recoded from scratch, using Python top-level functions.
 Among these, the function `reduce_graph` was pretty important, especially having plots in mind. The average page has too many links to be visualized: this function will consider only the first _n_ links of a given page.
