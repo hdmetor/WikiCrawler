@@ -16,13 +16,13 @@ class WikiCrawler:
     def __init__(self, path):
         self.visited = self.load(path)
         self.path = path
-    def crawl(self, start, max_length, add_links = True, num_links = 10): 
+    def crawl(self, start, max_length, add_links = True, num_links = 10):
         """
         crawl is the main worker
         it will start from \'start\' which can be either a page or a list of pages
         if \'add_links\' is set to true, then it will add the first \'num_links\' links of each page to the queue
         the crawling will stop after \'max_length\' iterations
-        """           
+        """
         if type(start) == str:
             if self.query(start):
                 print(start, 'was already crawled')
@@ -36,7 +36,7 @@ class WikiCrawler:
                 print('all pages crawled, quitting')
                 self.save(self.path)
                 quit()
-            else:    
+            else:
                 page = self.to_visit[0]
                 self.to_visit.pop(0)
             if page in self.visited:
@@ -49,9 +49,11 @@ class WikiCrawler:
                     crawl_html(page, num_links)
                 except urllib.error.HTTPError:
                     print(page,' is a bad url, it will be skipped')
-        print('done with crawling, saving the results')     
+        print('done with crawling, saving the results')
         self.save(self.path)
     def crawl_html(page, num_links, sleep_time = 1):
+        """Given a page, the function will obtain the html code of it and extract the internal links, number of tranlation and text lenght of the page, using beautifulsoup.
+            Is it possible to change the max number of links saved and change the sleep time between requests, default to 1 sec """
         htmltext = urllib.request.urlopen(self.root+page).read()
         #be kind :)
         time.sleep(sleep_time)
@@ -68,6 +70,10 @@ class WikiCrawler:
         if (max_length - local_length ) % 100 == 0 and (max_length - local_length ) !=max_iter:
           self.save(self.path)
 
+    # TODO
+    def crawl_raw(page):
+        """Exract the required informations form the Wikipedia markdown language."""
+        pass
 
     def text_length(self,soup):
         """text_length computes the text length of an article, pass the soup as argument"""
@@ -146,11 +152,13 @@ def wiki_links_condition(link):
 
 
 
-if __name__ == '__main__': 
+if __name__ == '__main__':
+    # raw page:
+    # http://en.wikipedia.org/w/index.php?title=Donald_Duck&action=raw
     start = 'Donald_Duck'
     max_iter = 100
     crawler = WikiCrawler('data/new.p')
-    print ('\n\ncrawling started at ',datetime.datetime.now())   
+    print ('\n\ncrawling started at ',datetime.datetime.now())
     crawler.crawl(start,max_iter, add_links = True)
-    print ('\n\ncrawling finished at ',datetime.datetime.now()) 
+    print ('\n\ncrawling finished at ',datetime.datetime.now())
     crawler.query(start)
