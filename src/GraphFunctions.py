@@ -1,3 +1,6 @@
+from collections import defaultdict
+import pprint
+
 class Node:
     def __init__(self, key, sons = None, weight = None, depth = None, time_start = None, time_stop = None, parent = None):
         self.key = key
@@ -195,10 +198,10 @@ def reverse_dic(original):
     return rev
 
 def SCC(graph, prints = False):
-    from collections import defaultdict
-    import pprint
     global nodes
     nodes = []
+    global time
+    time = 0
     DFS_general(graph)
     reversed_dict = reverse_dic(graph)
     visited = set()
@@ -214,7 +217,29 @@ def SCC(graph, prints = False):
         else:
             ancestor = NodeToParent(key)
             scc[ancestor.key].append(key)
-    pprint.pprint(scc)
+    return(scc)
+
+def SSCConnections(graph):
+    """Given a graph, the function returns a dictionary containing the coneections
+    between its SSC"""
+    SCCLinks = defaultdict(list)
+    SCCGraph = SCC(graph)
+    # this is a mapping node -> SSC class
+    nodesToSSC = reverse_dic(SCCGraph)
+    for (node, links) in graph.items():
+        node_component = nodesToSSC[node][0]
+        for link in links:
+            link_component = nodesToSSC[link][0]
+            # if the link is internal to the cluster, we don't need it
+            if link_component == node_component:
+                pass
+
+            elif node_component not in SCCLinks or link_component not in SCCLinks[node_component]:
+                SCCLinks[node_component].append(link_component)
+
+    return SCCLinks
+
+
 
 if __name__ == '__main__':
 
@@ -257,3 +282,4 @@ if __name__ == '__main__':
     #SCC(graph, prints = False)
     #print(BFS(graph2,'a', stop = 'f'))
     #print(DFS_general(graph, prints = True))
+    #SSCConnections(graph3)
