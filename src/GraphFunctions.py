@@ -2,7 +2,7 @@ class Node:
     def __init__(self, key, sons = None, weight = None, depth = None, time_start = None, time_stop = None, parent = None):
         self.key = key
         self.weight = weight if weight is not None else 0
-        self.sons = sons #if sons is not None else []
+        self.sons = sons if sons is not None else []
         self.depth = depth #if depth is not None else 0
         self.time_start = time_start
         self.time_stop = time_stop
@@ -216,42 +216,44 @@ def SCC(graph, prints = False):
             scc[ancestor.key].append(key)
     pprint.pprint(scc)
 
-graph = {
-    'a' : ["c", "b"],
-    'b' : ["d", "e"],
-    'c' : ["f"],
-    'e' : ["f"]
-}
+if __name__ == '__main__':
 
-graph2 = {
-    'a' : ["c", "b"],
-    'b' : ["d", "e"],
-    'c' : ["f"],
-    'e' : ["f"],
-    'g' : ['h','i'],
-    'h' : ['i'],
-    'j' : ['m'],
-    'l' : ['m']
-}
+    graph = {
+        'a' : ["c", "b"],
+        'b' : ["d", "e"],
+        'c' : ["f"],
+        'e' : ["f"]
+    }
 
-graph3 = {
-    "a" : ["b"],
-    "b" : ['c','f','e'],
-    'c' : ['d','g'],
-    'd' : ['c','h'],
-    'e' : ['a','f'],
-    'f' : ['g'],
-    'g' : ['f','h'],
-    'h' : ['h']
+    graph2 = {
+        'a' : ["c", "b"],
+        'b' : ["d", "e"],
+        'c' : ["f"],
+        'e' : ["f"],
+        'g' : ['h','i'],
+        'h' : ['i'],
+        'j' : ['m'],
+        'l' : ['m']
+    }
+
+    graph3 = {
+        "a" : ["b"],
+        "b" : ['c','f','e'],
+        'c' : ['d','g'],
+        'd' : ['c','h'],
+        'e' : ['a','f'],
+        'f' : ['g'],
+        'g' : ['f','h'],
+        'h' : ['h']
 
 
-}
-time = 0
-nodes = []
-#print(reverse_dic(graph2))
-#print(DFS_general(graph2))
-#print(reverse_dic(graph3))
-SCC(graph3, prints = False)
-SCC(graph, prints = False)
-#print(BFS(graph2,'a', stop = 'f'))
-#print(DFS_general(graph, prints = True))
+    }
+    #time = 0
+    #nodes = []
+    #print(reverse_dic(graph2))
+    #print(DFS_general(graph2))
+    #print(reverse_dic(graph3))
+    #SCC(graph3, prints = False)
+    #SCC(graph, prints = False)
+    #print(BFS(graph2,'a', stop = 'f'))
+    #print(DFS_general(graph, prints = True))
