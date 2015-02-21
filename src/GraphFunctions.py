@@ -282,4 +282,4 @@ if __name__ == '__main__':
     #SCC(graph, prints = False)
     #print(BFS(graph2,'a', stop = 'f'))
     #print(DFS_general(graph, prints = True))
-    #SSCConnections(graph3)
+    print(SSCConnections(graph3))
