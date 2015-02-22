@@ -151,7 +151,7 @@ def BFS(graph, start, stop = None, prints = False):
         if prints:
             print(node.key)
         if stop is not None and stop == node.key:
-            return NodeToPath(node)
+            yield NodeToPath(node)
         try:
             for son in graph[node.key]:
                 if son in visited:
@@ -161,6 +161,14 @@ def BFS(graph, start, stop = None, prints = False):
         except KeyError:
             # node has no sons
             pass
+
+def ShortestPath(graph, start, stop, prints = False):
+    generator = BFS(graph, start, stop, prints = prints)
+    try:
+        return next(generator)
+    except StopIteration:
+            return None
+
 
 def NodeToPath(node):
     path = []
