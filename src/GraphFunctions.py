@@ -11,7 +11,21 @@ class Node:
         self.time_stop = time_stop
         self.parent = parent
 
+    def __iter__(self):
+        print('firing iter')
+        return (son.key for son in self.sons)
+"""
+    def next(self):
+        return self.__next__
 
+    def __next__(self):
+
+        try:
+            print(8)
+            yield self.sons.next().key
+        except StopIteration:
+            raise StopIteration
+"""
 def reduce_graph(graph, start, max_depth, max_links = None):
     """
     reduce_graph will return the a subgraph of \'graph\', obtained by start and following \'max_links\' up to depth \'max_depth\'
