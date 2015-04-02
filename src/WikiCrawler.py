@@ -13,6 +13,9 @@ class WikiCrawler:
     #max number of links stored in the queue
     queue_max = 500
     root = 'http://en.wikipedia.org/wiki/'
+    headers = {
+        "User-Agent": "github.com/hdmetor/WikiCrawler"
+    }
     def __init__(self, path):
         self.visited = self.load(path)
         self.path = path
@@ -54,7 +57,7 @@ class WikiCrawler:
     def crawl_html(page, num_links, sleep_time = 1):
         """Given a page, the function will obtain the html code of it and extract the internal links, number of tranlation and text lenght of the page, using beautifulsoup.
             Is it possible to change the max number of links saved and change the sleep time between requests, default to 1 sec """
-        htmltext = urllib.request.urlopen(self.root+page).read()
+        htmltext = urllib.request.urlopen(self.root+page, headers=headers).read()
         #be kind :)
         time.sleep(sleep_time)
         soup = BeautifulSoup(htmltext)
