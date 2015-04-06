@@ -14,7 +14,7 @@ class WikiCrawler:
     queue_max = 500
     root = 'http://en.wikipedia.org/wiki/'
     headers = {
-        "User-Agent": "github.com/hdmetor/WikiCrawler"
+        "User-Agent": "https://github.com/hdmetor/WikiCrawler"
     }
     def __init__(self, path):
         self.visited = self.load(path)
