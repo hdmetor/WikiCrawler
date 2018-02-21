@@ -1,9 +1,9 @@
-#Exploration into the English Wikipedia World
+# Exploration into the English Wikipedia World
 
 
 After gathering some data with my WikiCrawler I decided to have a look at them.
 
-##Structure of the data
+## Structure of the data
 
 The data are structured as a dictionary of dictionary.
 The keys of the outermost one are the page visited, while its values are the dictionary
@@ -32,9 +32,9 @@ Let's see how many pages have we reached:
 So we crawled an average of 38.5 links for each page. This number corresponds to 0.28% of the total of pages.
 
 For such reasons, the following analysis doesn't intend to be complete or exhaustive in any way.
-#Distributions
+# Distributions
 
-##Languages
+## Languages
 
 Some pages do have translation to other languages. How many languages, have we reached in the crawling?
 
@@ -89,7 +89,7 @@ This is the distribution of the 100 less used languages
 
 ![Last 100 languages](Images/lang_last_100.png)
 
-##Text
+## Text
 
 As we can see the distribution goes down pretty quickly:
 
@@ -113,7 +113,7 @@ Let's zoom a couple of times in the first part of it:
 
 ![](Images/hist_text_40K.png)
 
-##Links
+## Links
 
 Which are the pages with more links in them?
 
@@ -149,7 +149,7 @@ Let's zoom again in the where the majority of the data is:
 
 ![](Images/hist_links_400.png)
 
-##Translations
+## Translations
 
 What about the number of languages in each page (i.e. the number of translations)?
 
@@ -165,9 +165,9 @@ What about the number of languages in each page (i.e. the number of translations
 
 As we can see, circa 17% of the pages I crawled have at most 2 translations.
 
-#Scatter plots
+# Scatter plots
 
-##Languages vs links
+## Languages vs links
 My first guess was that there is a correlation between the number of languages and the number of links in a page, so that more 'important' pages have more translation and also more links.
 
 
@@ -228,7 +228,7 @@ Let's use size of the dot and intensity of the color to show the length of the t
     ggtitle("Languages vs links") + xlab("Number of links") + ylab("Number of languages")
 
 ![Languages vs Links and Text](Images/lang_vs_links_size.png)
-##Languages vs text length
+## Languages vs text length
 
 Is there a relation between the number of languages an article is written in with the length of the text of its article?
 
@@ -326,7 +326,7 @@ As before, let's include the size of the dots:
 
 ![Languages vs Text and Links](Images/lang_vs_text_size.png)
 
-##Text length vs number of links
+## Text length vs number of links
 
 There seems to be a cleaner relation  between the text length and the number of links present on a page.
 This is in part obvious because, by definition, links contains words.

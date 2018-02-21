@@ -1,4 +1,4 @@
-#WikiCrawer:
+# WikiCrawer:
 
 This is a basic crawler for Wikipedia articles.
 Please don't use it to aggressively crawl Wiki and remember to follow [their rules](
@@ -41,7 +41,7 @@ Node color and node size are proportional to the number of links contained in th
  In the [graphs](graphs) folder there are more experiment with different starting nodes, number of links per page and number of layers.
 No
 
-##Possible improvements::
+## Possible improvements::
 
 * find interesting or amusing connections between totally unrelated topics. For example the trip from Machiavelli to French fries (and back) is:
 
